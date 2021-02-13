@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from .models import (
@@ -8,8 +9,8 @@ from .models import (
     Holder, Holder2, Holder3, Holder4, Holder5, Inner, Inner2, Inner3,
     Inner4Stacked, Inner4Tabular, Inner5Stacked, Inner5Tabular, NonAutoPKBook,
     NonAutoPKBookChild, Novel, NovelReadonlyChapter, OutfitItem,
-    ParentModelWithCustomPk, Poll, Profile, ProfileCollection, Question,
-    ReadOnlyInline, ShoppingWeakness, Sighting, SomeChildModel,
+    ParentModelWithCustomPk, Person, Poll, Profile, ProfileCollection,
+    Question, ReadOnlyInline, ShoppingWeakness, Sighting, SomeChildModel,
     SomeParentModel, SottoCapo, Teacher, Title, TitleCollection,
 )
 
@@ -102,7 +103,7 @@ class TitleForm(forms.ModelForm):
         title1 = cleaned_data.get("title1")
         title2 = cleaned_data.get("title2")
         if title1 != title2:
-            raise forms.ValidationError("The two titles must be the same")
+            raise ValidationError("The two titles must be the same")
         return cleaned_data
 
 
@@ -291,6 +292,14 @@ class TeacherAdmin(admin.ModelAdmin):
     inlines = [StudentInline]
 
 
+class AuthorTabularInline(admin.TabularInline):
+    model = Author
+
+
+class FashonistaStackedInline(admin.StackedInline):
+    model = Fashionista
+
+
 site.register(TitleCollection, inlines=[TitleInline])
 # Test bug #12561 and #12778
 # only ModelAdmin media
@@ -317,3 +326,4 @@ site.register([Question, Inner4Stacked, Inner4Tabular])
 site.register(Teacher, TeacherAdmin)
 site.register(Chapter, inlines=[FootNoteNonEditableInlineCustomForm])
 site.register(OutfitItem, inlines=[WeaknessInlineCustomForm])
+site.register(Person, inlines=[AuthorTabularInline, FashonistaStackedInline])

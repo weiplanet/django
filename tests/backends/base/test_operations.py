@@ -41,7 +41,7 @@ class SimpleDatabaseOperationTests(SimpleTestCase):
         self.assertEqual(self.ops.set_time_zone_sql(), '')
 
     def test_sql_flush(self):
-        msg = 'subclasses of BaseDatabaseOperations must provide a sql_flush() method'
+        msg = 'subclasses of BaseDatabaseOperations must provide an sql_flush() method'
         with self.assertRaisesMessage(NotImplementedError, msg):
             self.ops.sql_flush(None, None)
 
@@ -92,10 +92,6 @@ class SimpleDatabaseOperationTests(SimpleTestCase):
     def test_time_extract_sql(self):
         with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % 'date_extract_sql'):
             self.ops.time_extract_sql(None, None)
-
-    def test_date_interval_sql(self):
-        with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % 'date_interval_sql'):
-            self.ops.date_interval_sql(None)
 
     def test_date_trunc_sql(self):
         with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % 'date_trunc_sql'):
@@ -172,7 +168,7 @@ class SqlFlushTests(TransactionTestCase):
             reset_sequences=True,
             allow_cascade=True,
         )
-        connection.ops.execute_sql_flush(connection.alias, sql_list)
+        connection.ops.execute_sql_flush(sql_list)
 
         with transaction.atomic():
             self.assertIs(Author.objects.exists(), False)
